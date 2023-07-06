@@ -10,11 +10,12 @@ from spring import spring
 
 def G(y,t):
     x_d, theta_d, x, theta = y[0], y[1], y[2], y[3]
-    F= F0
+    F = F0
     x_dd = (-(Mp**2)*(l**2)*g*cos(theta)*sin(theta)+Mp*(l**2)*(Mp*l*(theta_d**2)*sin(theta)-d*x_d)+Mp*l**2*F)/(Mp*(l**2)*(Mc+Mp*(1-cos(theta)**2)))
     Numerator   =(Mc+Mp)*Mp*g*l*sin(theta) - Mp*l*cos(theta)*(Mp*l*(theta_d**2)*sin(theta)-d*x_d)+Mp*l*cos(theta)*F
-    Denominator = Mp*(l**2)*(Mc+Mp*(1-cos(theta)**2))
-    theta_dd = Numerator/Denominator
+    Denumerator = Mp*(l**2)*(Mc+Mp*(1-cos(theta)**2))
+    theta_dd = Numerator/Denumerator - dj*theta_d
+    
     return np.array([x_dd, theta_dd, x_d, theta_d])
 
 def RK4_step(y, t, dt):
@@ -111,11 +112,12 @@ l = pendulum_length / scale
 Mc = 5.0                        #cart mass
 Mp = 1.0                        #pendulum mass
 g = -9.81                       #gravitational force
-d = -4.0                         #damping
+d = .1                         #damping
+dj = .02                        #damping at joint
 t = 0.0                         #initial time
 F0 = 0.0                        #initial force
 delta_t = 0.1
-y = np.array([0,0.1,0,4])         #initial conditions [cart speed, pendulum angular speed, cart position, pendulum angle]
+y = np.array([0,0,0,3])         #initial conditions [cart speed, pendulum angular speed, cart position, pendulum angle]
 point1 = (800,475)
 
 #pygame and objects setup
