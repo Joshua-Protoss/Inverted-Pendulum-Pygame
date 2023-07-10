@@ -4,6 +4,7 @@ import numpy as np
 from numpy import sin, cos, pi
 from numpy.linalg import inv
 from pygame.locals import *
+from spring import spring
 
 #Solver functions (Runge_Kutta4)
 
@@ -17,7 +18,7 @@ def G(y,t):
     b1 = -Mp*sin(theta)*l*theta_d**2
     b2 = g*sin(theta)
     B = np.array([b1,b2])
-    F=np.array([0,0])
+    F = np.array([0,0])
     #F[0] = F0
 
     accel = inv(A).dot(B)#+inv(A).dot(F)
@@ -85,6 +86,30 @@ class Pendulum():
         self.left = self.pos[0]
         self.top = self.pos[1]
         self.att = position_attachment
+
+class Spring():
+    def __init__(self, color, start, end, nodes, width, lead1, lead2):
+        self.start = start
+        self.end = end
+        self.nodes = nodes
+        self.width = width
+        self.lead1 = lead1
+        self.lead2 = lead2
+        self.weight = 3
+        self.color = color
+    def update(self, start, end):
+        self.start = start
+        self.end = end
+        self.x, self.y, self.p1, self.p2 = spring(self.start, self.end, self.nodes, self.width, self.lead1, self.lead2)
+        self.p1 = (int(self.p1[0]), int(self.p1[1]))
+        self.p2 = (int(self.p2[0]), int(self.p2[1]))
+    def render(self):
+        pygame.draw.line(screen, self.color, self.start, self.p1, self.weight)
+        prev_point = self.p1
+        for point in zip(self.x, self.y):
+            pygame.draw.line(screen, self.color, prev_point, point, self.weight)
+            prev_point = point
+        pygame.draw.line(screen, self.color, self.p2, self.end, self.weight)
 
 #Parameters
 pendulum_length = 325
